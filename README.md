@@ -77,4 +77,4 @@ dotnet run --project XboxLedControl.csproj -- --debug 75
 ## How it works
 
 The app opens `\\.\XboxGIP`, reads the controller's device ID from the first frame,
-then writes a 23-byte GIP LED command frame per [MS-GIPUSB §3.1.5.5.7](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gipusb).
+then writes a 23-byte GIP LED command frame per [MS-GIPUSB §3.1.5.5.7](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gipusb/ec312389-2e05-4915-85ed-0e8fe9c3d33b).
