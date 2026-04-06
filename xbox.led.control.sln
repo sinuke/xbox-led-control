@@ -1,0 +1,44 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XboxLedControl", "XboxLedControl.csproj", "{4B533B1E-D43E-389D-5F4E-2BC5D1596C77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "experiments", "experiments\experiments.csproj", "{7A4D2119-E390-F35D-DD66-7568C625735C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "experiments (1)", "experiments (1)", "{EE4E292A-BE90-A738-115F-960800594744}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tmp", "tmp", "{C17F61E0-E0A1-37A1-7EBA-CD6F66196B28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "winmd_inspect", "experiments\tmp\winmd_inspect\winmd_inspect.csproj", "{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B533B1E-D43E-389D-5F4E-2BC5D1596C77}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B533B1E-D43E-389D-5F4E-2BC5D1596C77}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B533B1E-D43E-389D-5F4E-2BC5D1596C77}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B533B1E-D43E-389D-5F4E-2BC5D1596C77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A4D2119-E390-F35D-DD66-7568C625735C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A4D2119-E390-F35D-DD66-7568C625735C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A4D2119-E390-F35D-DD66-7568C625735C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A4D2119-E390-F35D-DD66-7568C625735C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C17F61E0-E0A1-37A1-7EBA-CD6F66196B28} = {EE4E292A-BE90-A738-115F-960800594744}
+		{0E44C2AA-7636-0CEB-D5EF-85C9AD5766DE} = {C17F61E0-E0A1-37A1-7EBA-CD6F66196B28}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9F7D36A-068C-45EB-8C7E-F2CAB2BE140C}
+	EndGlobalSection
+EndGlobal

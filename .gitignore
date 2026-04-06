@@ -2,14 +2,15 @@ bin/
 obj/
 .vscode/
 .sdktools/
-experiments/
-*.sln
+
+# MSIX build artifacts
+experiments/pkg_staging/
+experiments/publish/
+*.msix
+*.pfx
+
 
 #CLAUDE
-.claude/
 .codemie/
+.claude/
 .playwright-mcp/
-CLAUDE.md
-habr_article.png
-habr_text.txt
-RESEARCH.md

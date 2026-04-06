@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap5="http://schemas.microsoft.com/appx/manifest/uap/windows10/5"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap5 rescap">
+
+  <Identity
+    Name="XboxLedControl"
+    Publisher="CN=XboxLedDev"
+    Version="1.0.0.0"
+    ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>XboxLedControl</DisplayName>
+    <PublisherDisplayName>XboxLedDev</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.22621.0" />
+    <PackageDependency Name="Microsoft.VCLibs.140.00" MinVersion="14.0.33519.0" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="en-US" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App"
+      Executable="XboxLedControlExperiments.exe"
+      EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+        DisplayName="XboxLedControl"
+        Description="Xbox controller Guide LED control"
+        BackgroundColor="transparent"
+        Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png" />
+      <Extensions>
+        <uap5:Extension Category="windows.appExecutionAlias">
+          <uap5:AppExecutionAlias>
+            <uap5:ExecutionAlias Alias="XboxLedControl.exe" />
+          </uap5:AppExecutionAlias>
+        </uap5:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+    <rescap:Capability Name="xboxAccessoryManagement" />
+    <rescap:Capability Name="gamingInputPreview" />
+    <DeviceCapability Name="bluetooth" />
+  </Capabilities>
+
+  <Extensions>
+    <Extension Category="windows.activatableClass.inProcessServer">
+      <InProcessServer>
+        <Path>Devices.Abstraction.dll</Path>
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.ControllerFactory"   ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.GipControllerFactory" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.HidControllerFactory" ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.Globals"              ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.GlobalsContext"       ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.MessageSender"        ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.MessageRequest"       ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.DevicesUtils"         ThreadingModel="both" />
+        <ActivatableClass ActivatableClassId="Devices.Abstraction.PlatformUtils"        ThreadingModel="both" />
+      </InProcessServer>
+    </Extension>
+  </Extensions>
+
+</Package>
