@@ -1,0 +1,15 @@
+bin/
+obj/
+.vscode/
+.sdktools/
+experiments/
+*.sln
+
+#CLAUDE
+.claude/
+.codemie/
+.playwright-mcp/
+CLAUDE.md
+habr_article.png
+habr_text.txt
+RESEARCH.md
