@@ -1,0 +1,178 @@
+name: CI/CD
+run-name: "CI/CD — ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.ref_name }}"
+
+on:
+  push:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Cancel any in-progress run for the same ref (e.g. rapid pushes to the same branch)
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ─────────────────────────────────────────
+  # Job 1: Unit tests
+  # ─────────────────────────────────────────
+  test:
+    name: "Tests — ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.ref_name }}"
+    runs-on: windows-latest
+    permissions:
+      checks: write   # required for dorny/test-reporter to create check runs
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      - name: Run unit tests
+        run: >
+          dotnet test XboxLedControl.Tests/XboxLedControl.Tests.csproj
+          --logger "trx;LogFileName=results.trx"
+
+      # Publish results to GitHub Summary and PR checks (runs even on test failure)
+      - name: Publish test results
+        uses: dorny/test-reporter@v2
+        if: always()
+        with:
+          name: Unit Tests
+          path: "**/*.trx"
+          reporter: dotnet-trx
+          fail-on-error: true
+
+  # ─────────────────────────────────────────
+  # Job 2: Build — compile + upload artifacts
+  # ─────────────────────────────────────────
+  build:
+    name: "Build — ${{ github.event_name == 'pull_request' && format('PR #{0}', github.event.pull_request.number) || github.ref_name }}"
+    needs: test
+    runs-on: windows-latest
+    outputs:
+      tag: ${{ steps.ver.outputs.tag }}
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0  # full tag history needed to count existing tags
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '10.x'
+
+      # ── Compute version tag ──────────────────────────────────────────────
+      #
+      #   master          → v1.0.{N}         N = number of existing v1.0.* tags
+      #   pull request    → pr-{PR}-{N+1}
+      #   other branch    → {safe-branch}-{N+1}
+      #
+      - name: Compute version tag
+        id: ver
+        shell: bash
+        run: |
+          git fetch --tags
+
+          if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+            COUNT=$(git tag -l "v1.0.[0-9]*" | wc -l | xargs)
+            TAG="v1.0.$COUNT"
+
+          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PR="${{ github.event.number }}"
+            COUNT=$(git tag -l "pr-$PR-[0-9]*" | wc -l | xargs)
+            IDX=$((COUNT + 1))
+            TAG="pr-$PR-$IDX"
+
+          else
+            BRANCH="${{ github.ref_name }}"
+            SAFE=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed -E 's/-{2,}/-/g' | sed 's/-$//')
+            COUNT=$(git tag -l "${SAFE}-[0-9]*" | wc -l | xargs)
+            IDX=$((COUNT + 1))
+            TAG="$SAFE-$IDX"
+          fi
+
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Resolved tag: $TAG"
+
+      - name: Publish standalone (self-contained, no .NET required)
+        run: >
+          dotnet publish XboxLedControl.csproj
+          -c Release -r win-x64
+          --self-contained true
+          -p:PublishSingleFile=true
+          -o publish/standalone
+
+      - name: Publish framework-dependent (requires .NET 10)
+        run: >
+          dotnet publish XboxLedControl.csproj
+          -c Release -r win-x64
+          --self-contained false
+          -p:PublishSingleFile=true
+          -o publish/framework
+
+      # Rename so both artifacts have distinct, descriptive names
+      - name: Stage artifacts
+        shell: bash
+        run: |
+          cp publish/standalone/XboxLedControl.exe publish/XboxLedControl-standalone.exe
+          cp publish/framework/XboxLedControl.exe  publish/XboxLedControl.exe
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.ver.outputs.tag }}
+          path: |
+            publish/XboxLedControl-standalone.exe
+            publish/XboxLedControl.exe
+
+      # Write summary for branches/PRs — master gets a release page instead
+      - name: Write job summary
+        if: github.ref != 'refs/heads/master'
+        shell: bash
+        run: |
+          RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ## Build: ${{ steps.ver.outputs.tag }}
+
+          | Artifact | Description |
+          |---|---|
+          | `XboxLedControl-standalone.exe` | Self-contained — .NET not required (~60–80 MB) |
+          | `XboxLedControl.exe` | Framework-dependent — requires .NET 10 (~500 KB) |
+
+          Built from `${{ github.ref_name }}` @ `${{ github.sha }}`
+          EOF
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[Download artifacts from this run]($RUN_URL)" >> $GITHUB_STEP_SUMMARY
+
+  # ─────────────────────────────────────────
+  # Job 3: Publish — GitHub Release (master only)
+  # ─────────────────────────────────────────
+  publish:
+    name: "Publish — ${{ github.ref_name }}"
+    needs: build
+    if: github.ref == 'refs/heads/master'
+    runs-on: windows-latest
+    permissions:
+      contents: write   # required to create GitHub Releases
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.tag }}
+          path: artifacts
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "${{ needs.build.outputs.tag }}" \
+            --repo "${{ github.repository }}" \
+            --title "${{ needs.build.outputs.tag }}" \
+            --notes "Built from \`${{ github.ref_name }}\` @ \`${{ github.sha }}\`" \
+            "artifacts/XboxLedControl-standalone.exe#XboxLedControl-standalone.exe" \
+            "artifacts/XboxLedControl.exe#XboxLedControl.exe"
