@@ -77,13 +77,13 @@ jobs:
           git fetch --tags
 
           if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
-            COUNT=$(git tag -l "v1.0.*" | grep -E '^v1\.0\.[0-9]+$' | wc -l | xargs)
+            COUNT=$(git tag -l "v1.0.[0-9]*" | wc -l | xargs)
             TAG="v1.0.$COUNT"
             IS_RELEASE=true
 
           elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
             PR="${{ github.event.number }}"
-            COUNT=$(git tag -l "pr-$PR-*" | grep -E "^pr-$PR-[0-9]+$" | wc -l | xargs)
+            COUNT=$(git tag -l "pr-$PR-[0-9]*" | wc -l | xargs)
             IDX=$((COUNT + 1))
             TAG="pr-$PR-$IDX"
             IS_RELEASE=false
@@ -91,7 +91,7 @@ jobs:
           else
             BRANCH="${{ github.ref_name }}"
             SAFE=$(echo "$BRANCH" | sed 's/[^a-zA-Z0-9._-]/-/g' | sed -E 's/-{2,}/-/g' | sed 's/-$//')
-            COUNT=$(git tag -l "$SAFE-*" | grep -E "^${SAFE}-[0-9]+$" | wc -l | xargs)
+            COUNT=$(git tag -l "${SAFE}-[0-9]*" | wc -l | xargs)
             IDX=$((COUNT + 1))
             TAG="$SAFE-$IDX"
             IS_RELEASE=false
