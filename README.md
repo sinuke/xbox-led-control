@@ -26,14 +26,14 @@ dotnet build XboxLedControl.csproj -c Release
 dotnet publish XboxLedControl.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
 ```
 
-Output: `bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\XboxLedControl.exe`
+Output: `bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\xbox-led-control.exe`
 
 ---
 
 ## Usage
 
 ```
-XboxLedControl [--debug] <brightness|pattern>
+xbox-led-control [--debug] <brightness|pattern>
 
   --debug      Print device ID, frame bytes, and send result.
 
@@ -44,15 +44,15 @@ XboxLedControl [--debug] <brightness|pattern>
 ### Examples
 
 ```bat
-XboxLedControl 0             # turn LED off
-XboxLedControl 50            # 50% brightness
-XboxLedControl 100           # maximum brightness
-XboxLedControl on            # solid on (max)
-XboxLedControl ramp          # animate (ramp) to full brightness
-XboxLedControl fastblink     # fast blink (200 ms on / 400 ms cycle)
-XboxLedControl slowblink     # slow blink (600 ms on / 1200 ms cycle)
-XboxLedControl charging      # charging pulse (3 s on / 6 s cycle)
-XboxLedControl --debug 50    # verbose output
+xbox-led-control 0             # turn LED off
+xbox-led-control 50            # 50% brightness
+xbox-led-control 100           # maximum brightness
+xbox-led-control on            # solid on (max)
+xbox-led-control ramp          # animate (ramp) to full brightness
+xbox-led-control fastblink     # fast blink (200 ms on / 400 ms cycle)
+xbox-led-control slowblink     # slow blink (600 ms on / 1200 ms cycle)
+xbox-led-control charging      # charging pulse (3 s on / 6 s cycle)
+xbox-led-control --debug 50    # verbose output
 ```
 
 ### Exit codes

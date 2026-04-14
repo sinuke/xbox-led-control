@@ -5,7 +5,7 @@
     <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>XboxLedControl</AssemblyName>
+    <AssemblyName>xbox-led-control</AssemblyName>
     <RootNamespace>XboxLedControl</RootNamespace>
     <Platforms>x64</Platforms>
   </PropertyGroup>
