@@ -9,6 +9,9 @@
     <RootNamespace>XboxLedControl</RootNamespace>
     <Platforms>x64</Platforms>
     <Version>1.0.0</Version>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>true</PublishTrimmed>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
     <Product>Xbox LED Control</Product>
     <Description>Controls the Guide-button LED on a USB-connected Xbox One / Series controller via xboxgip.sys.</Description>
     <Copyright>Copyright (c) 2026 sinuke</Copyright>
