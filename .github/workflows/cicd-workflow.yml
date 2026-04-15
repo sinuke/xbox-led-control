@@ -123,31 +123,17 @@ jobs:
           -p:Version=${{ steps.ver.outputs.version }}
           -o publish/standalone
 
-      - name: Publish framework-dependent (requires .NET 10)
-        run: >
-          dotnet publish XboxLedControl.csproj
-          -c Release -r win-x64
-          --no-self-contained
-          -p:PublishSingleFile=true
-          -p:Version=${{ steps.ver.outputs.version }}
-          -o publish/framework
-
-      # Rename so both artifacts have distinct, descriptive names
       - name: Stage artifacts
         shell: bash
         run: |
-          cp publish/standalone/xbox-led-control.exe publish/xbox-led-control-standalone.exe
-          cp publish/framework/xbox-led-control.exe  publish/xbox-led-control.exe
-          echo "standalone : $(du -h publish/xbox-led-control-standalone.exe | cut -f1)"
-          echo "framework  : $(du -h publish/xbox-led-control.exe            | cut -f1)"
+          cp publish/standalone/xbox-led-control.exe publish/xbox-led-control.exe
+          echo "standalone : $(du -h publish/xbox-led-control.exe | cut -f1)"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.ver.outputs.tag }}
-          path: |
-            publish/xbox-led-control-standalone.exe
-            publish/xbox-led-control.exe
+          path: publish/xbox-led-control.exe
 
       # Write summary for branches/PRs — master gets a release page instead
       - name: Write job summary
@@ -160,8 +146,7 @@ jobs:
 
           | Artifact | Description |
           |---|---|
-          | `xbox-led-control-standalone.exe` | Self-contained — .NET not required (~60–80 MB) |
-          | `xbox-led-control.exe` | Framework-dependent — requires .NET 10 (~500 KB) |
+          | `xbox-led-control.exe` | Self-contained — .NET not required |
 
           Built from `${{ github.ref_name }}` @ `${{ github.sha }}`
           EOF
@@ -195,5 +180,4 @@ jobs:
             --repo "${{ github.repository }}" \
             --title "${{ needs.build.outputs.tag }}" \
             --notes "Built from \`${{ github.ref_name }}\` @ \`${{ github.sha }}\`" \
-            "artifacts/xbox-led-control-standalone.exe#xbox-led-control-standalone.exe" \
             "artifacts/xbox-led-control.exe#xbox-led-control.exe"
