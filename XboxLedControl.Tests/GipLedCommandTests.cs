@@ -25,15 +25,15 @@ public class GipLedCommandTests
     }
 
     [Theory]
-    [InlineData(GipLedPattern.Off,            0,    0x00)]
-    [InlineData(GipLedPattern.On,            47,    0x01)]
-    [InlineData(GipLedPattern.FastBlink,     47,    0x02)]
-    [InlineData(GipLedPattern.SlowBlink,     47,    0x03)]
-    [InlineData(GipLedPattern.ChargingBlink, 47,    0x04)]
-    [InlineData(GipLedPattern.RampToLevel,   47,    0x0D)]
-    public void BuildRaw_EncodesPatternAndIntensity(GipLedPattern pattern, byte intensity, byte expectedPatternByte)
+    [InlineData((byte)0x00,  0,    0x00)]  // Off
+    [InlineData((byte)0x01, 47,    0x01)]  // On
+    [InlineData((byte)0x02, 47,    0x02)]  // FastBlink
+    [InlineData((byte)0x03, 47,    0x03)]  // SlowBlink
+    [InlineData((byte)0x04, 47,    0x04)]  // ChargingBlink
+    [InlineData((byte)0x0D, 47,    0x0D)]  // RampToLevel
+    public void BuildRaw_EncodesPatternAndIntensity(byte patternByte, byte intensity, byte expectedPatternByte)
     {
-        var frame = GipLedCommand.BuildRaw(pattern, intensity);
+        var frame = GipLedCommand.BuildRaw((GipLedPattern)patternByte, intensity);
         Assert.Equal(expectedPatternByte, frame[5]);
         Assert.Equal(intensity,           frame[6]);
     }

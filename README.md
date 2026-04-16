@@ -33,26 +33,30 @@ Output: `bin\Release\net10.0-windows10.0.19041.0\win-x64\publish\xbox-led-contro
 ## Usage
 
 ```
-xbox-led-control [--debug] <brightness|pattern>
+xbox-led-control led [-v|--verbose] <intensity|pattern>
 
-  --debug      Print device ID, frame bytes, and send result.
+  -v, --verbose  Print device ID, frame bytes, and send result.
 
-  brightness   0–100  (0 = off, 100 = maximum)
-  pattern      off | on | ramp | fastblink | slowblink | charging
+  intensity      0–100  (0 = off, 100 = maximum; out-of-range is an error)
+  pattern        off | on | ramp | fastblink | slowblink | charging
+
+xbox-led-control --help
+xbox-led-control led --help
 ```
 
 ### Examples
 
 ```bat
-xbox-led-control 0             # turn LED off
-xbox-led-control 50            # 50% brightness
-xbox-led-control 100           # maximum brightness
-xbox-led-control on            # solid on (max)
-xbox-led-control ramp          # animate (ramp) to full brightness
-xbox-led-control fastblink     # fast blink (200 ms on / 400 ms cycle)
-xbox-led-control slowblink     # slow blink (600 ms on / 1200 ms cycle)
-xbox-led-control charging      # charging pulse (3 s on / 6 s cycle)
-xbox-led-control --debug 50    # verbose output
+xbox-led-control led 0              # turn LED off
+xbox-led-control led 50             # 50% intensity
+xbox-led-control led 100            # maximum intensity
+xbox-led-control led on             # solid on (max)
+xbox-led-control led ramp           # animate (ramp) to full intensity
+xbox-led-control led fastblink      # fast blink (200 ms on / 400 ms cycle)
+xbox-led-control led slowblink      # slow blink (600 ms on / 1200 ms cycle)
+xbox-led-control led charging       # charging pulse (3 s on / 6 s cycle)
+xbox-led-control led 50 --verbose   # verbose output
+xbox-led-control led 50 -v          # same, short form
 ```
 
 ### Exit codes
@@ -67,9 +71,9 @@ xbox-led-control --debug 50    # verbose output
 ## Run with `dotnet run`
 
 ```bat
-dotnet run --project XboxLedControl.csproj -- 50
-dotnet run --project XboxLedControl.csproj -- ramp
-dotnet run --project XboxLedControl.csproj -- --debug 75
+dotnet run --project XboxLedControl.csproj -- led 50
+dotnet run --project XboxLedControl.csproj -- led ramp
+dotnet run --project XboxLedControl.csproj -- led 75 --verbose
 ```
 
 ---

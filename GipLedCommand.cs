@@ -6,7 +6,7 @@ namespace XboxLedControl;
 /// Values match the spec exactly (§3.1.5.5.7, Table 42):
 ///   https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gipusb/ec312389-2e05-4915-85ed-0e8fe9c3d33b
 /// </summary>
-public enum GipLedPattern : byte
+internal enum GipLedPattern : byte
 {
     Off           = 0x00,   // LED off
     On            = 0x01,   // Solid on (static); "Connected to host via USB"
@@ -44,7 +44,7 @@ public enum GipLedPattern : byte
 ///   bit 3 (Reserved)       = 0
 ///   bits 2:0 (Expansion)   = 000 → primary device
 /// </summary>
-public static class GipLedCommand
+internal static class GipLedCommand
 {
     /// <summary>
     /// Raw 7-byte GIP frame for WriteFile to \\.\XboxGIP.
@@ -61,9 +61,9 @@ public static class GipLedCommand
         ];
 
     /// <summary>
-    /// Scale a user-facing 0–100 brightness value to the 0–47 intensity
+    /// Scale a user-facing 0–100 intensity value to the 0–47 intensity
     /// range defined in the spec, preserving 0 → Off and 100 → max.
     /// </summary>
-    public static byte ScaleIntensity(byte brightness100)
-        => (byte)Math.Round(brightness100 * 47.0 / 100.0, MidpointRounding.AwayFromZero);
+    public static byte ScaleIntensity(byte intensity100)
+        => (byte)Math.Round(intensity100 * 47.0 / 100.0, MidpointRounding.AwayFromZero);
 }

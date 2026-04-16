@@ -53,16 +53,16 @@ public class GipDirectSenderTests
     // --- Payload at offset 20 ---
 
     [Theory]
-    [InlineData(GipLedPattern.Off,            0)]
-    [InlineData(GipLedPattern.On,            47)]
-    [InlineData(GipLedPattern.FastBlink,     20)]
-    [InlineData(GipLedPattern.RampToLevel,   35)]
-    public void BuildFrame_PayloadAtOffset20(GipLedPattern pattern, byte intensity)
+    [InlineData((byte)0x00,  0)]  // Off
+    [InlineData((byte)0x01, 47)]  // On
+    [InlineData((byte)0x02, 20)]  // FastBlink
+    [InlineData((byte)0x0D, 35)]  // RampToLevel
+    public void BuildFrame_PayloadAtOffset20(byte patternByte, byte intensity)
     {
-        var rawGip = GipLedCommand.BuildRaw(pattern, intensity);
+        var rawGip = GipLedCommand.BuildRaw((GipLedPattern)patternByte, intensity);
         var frame  = GipDirectSender.BuildFrame(ZeroMac, rawGip);
-        Assert.Equal(0x00,           frame[20]); // sub-command
-        Assert.Equal((byte)pattern,  frame[21]); // pattern
-        Assert.Equal(intensity,      frame[22]); // intensity
+        Assert.Equal(0x00,        frame[20]); // sub-command
+        Assert.Equal(patternByte, frame[21]); // pattern
+        Assert.Equal(intensity,   frame[22]); // intensity
     }
 }

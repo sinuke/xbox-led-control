@@ -21,4 +21,8 @@
     <Compile Remove="XboxLedControl.Tests\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="3.0.0-preview.3.26207.106" />
+  </ItemGroup>
+
 </Project>
