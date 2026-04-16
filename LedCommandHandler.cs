@@ -30,7 +30,7 @@ internal static class LedCommandHandler
             Console.WriteLine();
         }
 
-        bool ok = GipDirectSender.TrySend(frame, options.Verbose);
+        bool ok = GipDirectSender.TrySend(frame, options.Verbose, options.DeviceId);
         if (!ok)
             Console.Error.WriteLine("Failed: no USB Xbox controller found via \\\\.\\XboxGIP.");
 

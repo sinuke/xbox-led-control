@@ -42,6 +42,24 @@ internal static class CliParser
         };
         verboseOption.Aliases.Add("-v");
 
+        // --- Device-targeted option: opt-in per subcommand, NOT recursive ---
+        // Add to a subcommand via ledCommand.Options.Add(deviceOption).
+        // Commands that must not expose it (e.g. future 'list') simply don't add it.
+
+        Option<string?> deviceOption = new("--device")
+        {
+            Description = "Controller device ID (6 hex bytes, XX:XX:XX:XX:XX:XX). Skips auto-discovery."
+        };
+        deviceOption.Aliases.Add("-d");
+        deviceOption.Validators.Add(result =>
+        {
+            string? v = result.Tokens.Count > 0 ? result.Tokens[0].Value : null;
+            if (v is not null && !IsValidDeviceId(v))
+                result.AddError(
+                    $"'{v}' is not a valid device ID. " +
+                    "Expected 6 colon-separated hex bytes, e.g. AA:BB:CC:DD:EE:FF.");
+        });
+
         // --- 'led' subcommand ---
 
         Argument<string> valueArg = new("value")
@@ -59,12 +77,14 @@ internal static class CliParser
 
         Command ledCommand = new("led", "Set the Guide button LED intensity or pattern.");
         ledCommand.Arguments.Add(valueArg);
+        ledCommand.Options.Add(deviceOption);   // opt-in: led supports --device
 
         ledCommand.SetAction(parseResult =>
         {
             var (pattern, intensity) = ParseLedValue(parseResult.GetValue(valueArg)!);
             captured = new LedOptions(
                 Verbose:   parseResult.GetValue(verboseOption),
+                DeviceId:  ParseDeviceId(parseResult.GetValue(deviceOption)),
                 Pattern:   pattern,
                 Intensity: intensity
             );
@@ -116,4 +136,21 @@ internal static class CliParser
         n == 0
             ? (LedCommand.Off, (byte)0)
             : (LedCommand.On, GipLedCommand.ScaleIntensity((byte)n));
+
+    // -----------------------------------------------------------------
+    // Device ID helpers
+    // -----------------------------------------------------------------
+
+    private static bool IsValidDeviceId(string v)
+    {
+        string[] parts = v.Split(':');
+        return parts.Length == 6 && parts.All(p => p.Length == 2 && p.All(c => Uri.IsHexDigit(c)));
+    }
+
+    private static byte[]? ParseDeviceId(string? v)
+    {
+        if (v is null) return null;
+        string[] parts = v.ToUpperInvariant().Split(':');
+        return parts.Select(p => Convert.ToByte(p, 16)).ToArray();
+    }
 }

@@ -129,6 +129,48 @@ public class CliParserTests
     }
 
     // =========================================================
+    // --device / -d option
+    // =========================================================
+
+    [Fact]
+    public void TryParse_WithoutDevice_DeviceIdIsNull()
+    {
+        var opts = ParseLed("led", "on");
+        Assert.Null(opts.DeviceId);
+    }
+
+    [Theory]
+    [InlineData("--device")]
+    [InlineData("-d")]
+    public void TryParse_DeviceFlag_ParsesCorrectBytes(string flag)
+    {
+        var opts = ParseLed("led", "on", flag, "AA:BB:CC:DD:EE:FF");
+        Assert.NotNull(opts.DeviceId);
+        Assert.Equal(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF }, opts.DeviceId);
+    }
+
+    [Fact]
+    public void TryParse_DeviceFlag_LowercaseHex_Parsed()
+    {
+        var opts = ParseLed("led", "on", "--device", "aa:bb:cc:dd:ee:ff");
+        Assert.Equal(new byte[] { 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF }, opts.DeviceId);
+    }
+
+    [Theory]
+    [InlineData("AA:BB:CC:DD:EE")]        // only 5 bytes
+    [InlineData("AA:BB:CC:DD:EE:FF:00")]  // 7 bytes
+    [InlineData("AA:BB:CC:DD:EE:GG")]     // invalid hex
+    [InlineData("AABBCCDDEEFF")]           // missing colons
+    [InlineData("AA-BB-CC-DD-EE-FF")]     // wrong separator
+    [InlineData("")]                       // empty
+    public void TryParse_InvalidDeviceId_ReturnsFalse(string deviceId)
+    {
+        bool ok = CliParser.TryParse(["led", "on", "--device", deviceId], out _, out int exitCode);
+        Assert.False(ok);
+        Assert.NotEqual(0, exitCode);
+    }
+
+    // =========================================================
     // System.CommandLine built-ins return false with exit code 0
     // =========================================================
 

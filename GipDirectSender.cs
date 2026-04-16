@@ -27,8 +27,9 @@ internal static class GipDirectSender
     /// <summary>
     /// Send LED command via \\.\XboxGIP. Returns true if WriteFile succeeded.
     /// rawGip must be the 7-byte GIP frame from GipLedCommand.BuildRaw().
+    /// When <paramref name="deviceId"/> is provided, auto-discovery is skipped.
     /// </summary>
-    public static bool TrySend(byte[] rawGip, bool verbose)
+    public static bool TrySend(byte[] rawGip, bool verbose, byte[]? deviceId = null)
     {
         if (verbose) Console.WriteLine("Opening \\\\.\\XboxGIP...");
 
@@ -54,13 +55,22 @@ internal static class GipDirectSender
             out _, IntPtr.Zero);
         if (verbose) Console.WriteLine($"  Re-enumerate IOCTL: {(ioctlOk ? "OK" : $"failed ({Marshal.GetLastWin32Error()}), continuing")}");
 
-        byte[]? mac = ReadMac(hFile, timeoutMs: 1000, verbose);
-        if (mac == null)
+        byte[]? mac;
+        if (deviceId is not null)
         {
-            if (verbose) Console.WriteLine("  No controller announced (timeout).");
-            return false;
+            mac = deviceId;
+            if (verbose) Console.WriteLine($"  Device ID: {BitConverter.ToString(mac).Replace('-', ':')} (provided via --device)");
         }
-        if (verbose) Console.WriteLine($"  Device ID: {BitConverter.ToString(mac).Replace('-', ':')}");
+        else
+        {
+            mac = ReadMac(hFile, timeoutMs: 1000, verbose);
+            if (mac == null)
+            {
+                if (verbose) Console.WriteLine("  No controller announced (timeout).");
+                return false;
+            }
+            if (verbose) Console.WriteLine($"  Device ID: {BitConverter.ToString(mac).Replace('-', ':')} (auto-discovered)");
+        }
 
         byte[] buf = BuildFrame(mac, rawGip);
         if (verbose) Console.WriteLine($"  Write frame ({buf.Length}B = 20 hdr + {rawGip[3]} payload): {BitConverter.ToString(buf)}");
