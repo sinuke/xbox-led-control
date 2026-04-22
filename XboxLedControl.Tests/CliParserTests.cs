@@ -195,4 +195,55 @@ public class CliParserTests
         Assert.False(ok);
         Assert.Equal(0, exitCode);
     }
+
+    // =========================================================
+    // 'list' subcommand
+    // =========================================================
+
+    [Fact]
+    public void TryParse_List_ReturnsListOptions()
+    {
+        bool ok = CliParser.TryParse(["list"], out AppOptions? options, out _);
+        Assert.True(ok);
+        Assert.IsType<ListOptions>(options);
+    }
+
+    [Fact]
+    public void TryParse_ListWithoutVerbose_VerboseIsFalse()
+    {
+        bool ok = CliParser.TryParse(["list"], out AppOptions? options, out _);
+        Assert.True(ok);
+        var listOpts = Assert.IsType<ListOptions>(options);
+        Assert.False(listOpts.Verbose);
+    }
+
+    [Theory]
+    [InlineData("--verbose")]
+    [InlineData("-v")]
+    public void TryParse_ListVerbose_SetsVerboseTrue(string flag)
+    {
+        bool ok = CliParser.TryParse(["list", flag], out AppOptions? options, out _);
+        Assert.True(ok);
+        var listOpts = Assert.IsType<ListOptions>(options);
+        Assert.True(listOpts.Verbose);
+    }
+
+    [Theory]
+    [InlineData("list", "--help")]
+    [InlineData("list", "-h")]
+    [InlineData("list", "-?")]
+    public void TryParse_ListHelp_ReturnsFalseWithExitZero(string sub, string flag)
+    {
+        bool ok = CliParser.TryParse([sub, flag], out _, out int exitCode);
+        Assert.False(ok);
+        Assert.Equal(0, exitCode);
+    }
+
+    [Fact]
+    public void TryParse_ListWithDevice_ReturnsFalse()
+    {
+        bool ok = CliParser.TryParse(["list", "--device", "AA:BB:CC:DD:EE:FF"], out _, out int exitCode);
+        Assert.False(ok);
+        Assert.NotEqual(0, exitCode);
+    }
 }

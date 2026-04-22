@@ -91,11 +91,23 @@ internal static class CliParser
             return 0;
         });
 
+        // --- 'list' subcommand ---
+
+        Command listCommand = new("list", "List all connected Xbox controllers.");
+        listCommand.SetAction(parseResult =>
+        {
+            captured = new ListOptions(
+                Verbose: parseResult.GetValue(verboseOption)
+            );
+            return 0;
+        });
+
         // --- Root command ---
 
         RootCommand rootCommand = new("Controls the Guide-button LED on a USB-connected Xbox One / Series controller.");
         rootCommand.Options.Add(verboseOption);
         rootCommand.Subcommands.Add(ledCommand);
+        rootCommand.Subcommands.Add(listCommand);
 
         exitCode = rootCommand.Parse(args).Invoke();
 

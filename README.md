@@ -44,6 +44,7 @@ Global options (available to all commands):
 
 Commands:
   led              Set the Guide button LED intensity or pattern
+  list             List all connected Xbox controllers
 ```
 
 ### `led` command
@@ -63,6 +64,31 @@ Options:
   -?, -h, --help   Show help for this command
 ```
 
+### `list` command
+
+```
+xbox-led-control list [-v]
+
+Options:
+  -v, --verbose    Print verbose output (driver handle, IOCTL result, discovered MACs)
+  -?, -h, --help   Show help for this command
+```
+
+Output example:
+
+```
+#    Controller            Device ID
+---  --------------------  -----------------
+1    Xbox Controller       AA:BB:CC:DD:EE:FF
+2    Xbox Controller       11:22:33:44:55:66
+```
+
+If no controllers are connected:
+
+```
+No Xbox controllers found.
+```
+
 ### Examples
 
 ```bat
@@ -80,8 +106,12 @@ xbox-led-control led 50 -v                       # same, short form
 xbox-led-control led on --device AA:BB:CC:DD:EE:FF   # target specific controller
 xbox-led-control led 75 -d aa:bb:cc:dd:ee:ff         # same, lowercase hex
 
+xbox-led-control list                            # list all connected controllers
+xbox-led-control list -v                         # list with verbose driver output
+
 xbox-led-control --help                          # show global help
 xbox-led-control led --help                      # show led command help
+xbox-led-control list --help                     # show list command help
 xbox-led-control --version                       # show version (1.0.0)
 ```
 
@@ -101,6 +131,7 @@ dotnet run --project XboxLedControl.csproj -- led 50
 dotnet run --project XboxLedControl.csproj -- led ramp
 dotnet run --project XboxLedControl.csproj -- led 75 --verbose
 dotnet run --project XboxLedControl.csproj -- led on --device AA:BB:CC:DD:EE:FF
+dotnet run --project XboxLedControl.csproj -- list
 ```
 
 ---

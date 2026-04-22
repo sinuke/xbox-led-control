@@ -33,3 +33,6 @@ internal abstract record DeviceTargetedOptions(bool Verbose, byte[]? DeviceId)
 internal sealed record LedOptions(bool Verbose, byte[]? DeviceId, LedCommand Pattern, byte Intensity)
     : DeviceTargetedOptions(Verbose, DeviceId);
 
+/// <summary>Options for the <c>list</c> subcommand.</summary>
+internal sealed record ListOptions(bool Verbose) : AppOptions(Verbose);
+
