@@ -23,7 +23,7 @@ internal abstract record AppOptions(bool Verbose);
 /// <summary>
 /// Base for commands that target a specific controller.
 /// <see cref="DeviceId"/> overrides auto-discovery when provided.
-/// Commands that don't need device targeting (e.g. future <c>list</c>) inherit
+/// Commands that don't need device targeting (e.g. <c>list</c>) inherit
 /// <see cref="AppOptions"/> directly and never receive this option.
 /// </summary>
 internal abstract record DeviceTargetedOptions(bool Verbose, byte[]? DeviceId)
@@ -35,4 +35,8 @@ internal sealed record LedOptions(bool Verbose, byte[]? DeviceId, LedCommand Pat
 
 /// <summary>Options for the <c>list</c> subcommand.</summary>
 internal sealed record ListOptions(bool Verbose) : AppOptions(Verbose);
+
+/// <summary>Options for the <c>metadata</c> subcommand.</summary>
+internal sealed record MetadataOptions(bool Verbose, byte[]? DeviceId)
+    : DeviceTargetedOptions(Verbose, DeviceId);
 

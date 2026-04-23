@@ -8,8 +8,9 @@ internal static class CommandDispatcher
 {
     internal static int Dispatch(AppOptions options) => options switch
     {
-        LedOptions  led  => LedCommandHandler.Execute(led),
-        ListOptions list => ListCommandHandler.Execute(list),
+        LedOptions      led      => LedCommandHandler.Execute(led),
+        ListOptions     list     => ListCommandHandler.Execute(list),
+        MetadataOptions metadata => MetadataCommandHandler.Execute(metadata),
         _ => throw new InvalidOperationException($"No handler registered for options type '{options.GetType().Name}'.")
     };
 }

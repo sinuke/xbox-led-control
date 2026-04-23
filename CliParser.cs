@@ -9,7 +9,9 @@ namespace XboxLedControl;
  * Sends a GIP LED command directly via \\.\XboxGIP (xboxgip.sys).
  * No admin rights required.
  *
- * Usage:  xbox-led-control led [-v|--verbose] <intensity|pattern>
+ * Usage:  xbox-led-control led      [-v] [--device AA:BB:..] <intensity|pattern>
+ *         xbox-led-control list     [-v]
+ *         xbox-led-control metadata [-v] [--device AA:BB:..]
  *
  * Protocol: MS-GIPUSB §3.1.5.5.7 (LED eButton Command)
  */
@@ -44,7 +46,7 @@ internal static class CliParser
 
         // --- Device-targeted option: opt-in per subcommand, NOT recursive ---
         // Add to a subcommand via ledCommand.Options.Add(deviceOption).
-        // Commands that must not expose it (e.g. future 'list') simply don't add it.
+        // Commands that must not expose it (e.g. 'list') simply don't add it.
 
         Option<string?> deviceOption = new("--device")
         {
@@ -102,12 +104,26 @@ internal static class CliParser
             return 0;
         });
 
+        // --- 'metadata' subcommand ---
+
+        Command metadataCommand = new("metadata", "Read and display GIP metadata from a controller.");
+        metadataCommand.Options.Add(deviceOption);   // opt-in: metadata supports --device
+        metadataCommand.SetAction(parseResult =>
+        {
+            captured = new MetadataOptions(
+                Verbose:  parseResult.GetValue(verboseOption),
+                DeviceId: ParseDeviceId(parseResult.GetValue(deviceOption))
+            );
+            return 0;
+        });
+
         // --- Root command ---
 
         RootCommand rootCommand = new("Controls the Guide-button LED on a USB-connected Xbox One / Series controller.");
         rootCommand.Options.Add(verboseOption);
         rootCommand.Subcommands.Add(ledCommand);
         rootCommand.Subcommands.Add(listCommand);
+        rootCommand.Subcommands.Add(metadataCommand);
 
         exitCode = rootCommand.Parse(args).Invoke();
 
