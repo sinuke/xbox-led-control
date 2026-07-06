@@ -182,3 +182,6 @@ All three commands open `\\.\XboxGIP` (driver `xboxgip.sys`) and send `IOCTL_GIP
 - **`led`** — reads the first inbound frame to discover the device ID, then writes a 23-byte GIP frame per [MS-GIPUSB §3.1.5.5.7](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gipusb/ec312389-2e05-4915-85ed-0e8fe9c3d33b). When `--device` is provided, the discovery read is skipped entirely.
 - **`list`** — reads all inbound frames for up to 1 second, collecting device MACs and opportunistically extracting VendorID/ProductID from metadata fragments to resolve product names.
 - **`metadata`** — passively reads the fragmented GIP metadata blob the controller broadcasts during enumeration (no write is sent; the driver only forwards host writes for LED commands). Reassembles fragments per [MS-GIPUSB §3.1.5.2](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-gipusb/), then decodes the binary blob.
+
+## Demo
+![image](images/demo.gif)
